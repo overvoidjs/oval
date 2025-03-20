@@ -72,6 +72,10 @@ oval.alert = function (options) {
     // Добавляем модальное окно в DOM
     document.body.appendChild(modal);
 
+    if (typeof options.onOpen === 'function') {
+        options.onOpen();
+    }
+
     let result = {
         isConfirmed: false,
         isCanceled: false,
