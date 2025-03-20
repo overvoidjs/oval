@@ -1,7 +1,6 @@
 function oval() { }
 
 oval.alert = function (options) {
-    // Создаем основные элементы
     const modal = document.createElement('div');
     modal.classList.add('oval-modal');
 
@@ -26,7 +25,6 @@ oval.alert = function (options) {
     overlay.classList.add('oval-overlay');
     document.body.appendChild(overlay);
 
-    // Создаем контейнер для произвольного HTML-кода
     const htmlContent = document.createElement('div');
     htmlContent.classList.add('oval-html-content');
 
@@ -35,29 +33,20 @@ oval.alert = function (options) {
     confirmButton.textContent = options.confirmButtonText || 'OK';
 
     if (options.icon) {
-        // Создаем элемент для иконки
         const iconElement = document.createElement('span');
         iconElement.classList.add('material-icons');
         iconElement.textContent = options.icon || '';
-        iconElement.style = options.iconStyle || 'color:black;font-size:30px'; // Устанавливаем цвет иконки
+        iconElement.style = options.iconStyle || 'color:black;font-size:30px';
 
-        // Добавляем иконку в разметку (например, перед заголовком)
-        // titleElement.before(iconElement);
-        // Добавляем иконку перед заголовком
-        // content.insertBefore(iconElement, title);
-        // title.before(iconElement);
         content.appendChild(iconElement);
     }
 
     actions.appendChild(confirmButton);
 
-    // Собираем структуру модального окна
     content.appendChild(title);
     content.appendChild(text);
-    // Если передан HTML-код, то вставляем его в контейнер
     if (options.html) {
         htmlContent.innerHTML = options.html;
-        // Добавляем контейнер с HTML-кодом в содержимое модального окна
         content.appendChild(htmlContent);
     }
     modal.appendChild(crossclose);
@@ -66,10 +55,9 @@ oval.alert = function (options) {
         modal.appendChild(actions);
     }
     if(options.overlay){
-        overlay.style.display = 'block';
+        overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
     }
 
-    // Добавляем модальное окно в DOM
     document.body.appendChild(modal);
 
     if (typeof options.onOpen === 'function') {
@@ -82,27 +70,23 @@ oval.alert = function (options) {
         isClosed: false
     }
 
-    // Возвращаем Promise для обработки событий
     return new Promise((resolve) => {
         confirmButton.addEventListener('click', () => {
             modal.remove();
             result.isConfirmed = true;
-            overlay.style.display = 'none';
-            resolve(result); // Передаем объект опций для дальнейшей обработки
+            overlay.remove();
+            resolve(result);
         });
 
         if (options.showCancelButton) {
-            // Создаем кнопку отмены, если она указана в опциях
             const cancelButton = document.createElement('button');
             cancelButton.classList.add('oval-button', 'oval-cancel');
             cancelButton.textContent = options.cancelButtonText || 'Отмена';
             actions.appendChild(cancelButton);
-            // Обработчик события для кнопки отмены
             cancelButton.addEventListener('click', () => {
                 modal.remove();
+                overlay.remove();
                 result.isCanceled = true;
-                overlay.style.display = 'none';
-                // Разрешаем Promise с дополнительным свойством, указывающим, что была нажата кнопка отмены
                 resolve(result);
             });
         }
@@ -116,17 +100,16 @@ oval.alert = function (options) {
             
                 result.data = formDataObject;
                 modal.remove();
-                overlay.style.display = 'none';
+                overlay.remove();
                 resolve(result);
             });
         }
 
         if (options.closeOnOutsideClick) {
-            document.addEventListener('click', (event) => {
-                // Проверяем, является ли кликнутый элемент модальным окном или его содержимым
+            overlay.addEventListener('click', (event) => {
                 if (!modal.contains(event.target) && event.target !== modal) {
                     modal.remove();
-                    overlay.style.display = 'none';
+                    overlay.remove();
                     result.isClosed = true;
                     resolve(result);
                 }
@@ -135,11 +118,10 @@ oval.alert = function (options) {
 
         crossclose.addEventListener('click', () => {
             modal.remove();
-            overlay.style.display = 'none';
+            overlay.remove();
             result.isClosed = true;
             resolve(result);
         });
-
 
     });
 };
