@@ -4,9 +4,6 @@ oval.alert = function (options) {
     const modal = document.createElement('div');
     modal.classList.add('oval-modal');
 
-    const crossclose = document.createElement('div');
-    crossclose.classList.add('crossclose');
-
     const content = document.createElement('div');
     content.classList.add('oval-content');
 
@@ -32,6 +29,13 @@ oval.alert = function (options) {
     confirmButton.classList.add('oval-button', 'oval-confirm');
     confirmButton.textContent = options.confirmButtonText || 'OK';
 
+    // Создаем крестик только если hideCrossClose не true
+    if (!options.hideCrossClose) {
+        const crossclose = document.createElement('div');
+        crossclose.classList.add('crossclose');
+        modal.appendChild(crossclose);
+    }
+
     if (options.icon) {
         const iconElement = document.createElement('span');
         iconElement.classList.add('material-icons');
@@ -49,7 +53,7 @@ oval.alert = function (options) {
         htmlContent.innerHTML = options.html;
         content.appendChild(htmlContent);
     }
-    modal.appendChild(crossclose);
+    
     modal.appendChild(content);
     if (!options.hideButtons) {
         modal.appendChild(actions);
@@ -96,7 +100,7 @@ oval.alert = function (options) {
                 event.preventDefault();
             
                 const formData = new FormData(event.target);
-                const formDataObject = Object.fromEntries(formData.entries());   
+                const formDataObject = Object.fromEntries(formData.entries());   
             
                 result.data = formDataObject;
                 modal.remove();
@@ -116,12 +120,16 @@ oval.alert = function (options) {
             });
         }
 
-        crossclose.addEventListener('click', () => {
-            modal.remove();
-            overlay.remove();
-            result.isClosed = true;
-            resolve(result);
-        });
+        // Добавляем обработчик для крестика только если он создан
+        if (!options.hideCrossClose) {
+            const crossclose = modal.querySelector('.crossclose');
+            crossclose.addEventListener('click', () => {
+                modal.remove();
+                overlay.remove();
+                result.isClosed = true;
+                resolve(result);
+            });
+        }
 
     });
 };
