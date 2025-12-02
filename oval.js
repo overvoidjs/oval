@@ -49,7 +49,22 @@ oval.alert = function (options) {
 
     content.appendChild(title);
     content.appendChild(text);
-    if (options.html) {
+    
+    // Обработка html из селектора
+    if (options.htmlFromSelector) {
+        const selectorElement = document.querySelector(options.htmlFromSelector);
+        if (selectorElement) {
+            const wrapperDiv = document.createElement('div');
+            wrapperDiv.classList.add('ovalhtml');
+            wrapperDiv.innerHTML = selectorElement.innerHTML;
+            htmlContent.appendChild(wrapperDiv);
+            content.appendChild(htmlContent);
+        } else {
+            console.warn(`Элемент с селектором "${options.htmlFromSelector}" не найден`);
+        }
+    }
+    // Обработка обычного html
+    else if (options.html) {
         htmlContent.innerHTML = options.html;
         content.appendChild(htmlContent);
     }
@@ -95,7 +110,7 @@ oval.alert = function (options) {
             });
         }
 
-        if (options.html) {
+        if (options.html || options.htmlFromSelector) {
             htmlContent.addEventListener('submit', (event) => {
                 event.preventDefault();
             
