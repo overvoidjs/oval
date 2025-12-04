@@ -3,23 +3,42 @@ function oval() { }
 oval.alert = function (options) {
     const modal = document.createElement('div');
     modal.classList.add('oval-modal');
+    
+    // Добавляем пользовательский класс к модальному окну
+    if (options.modalClass) {
+        modal.classList.add(options.modalClass);
+    }
 
     const content = document.createElement('div');
     content.classList.add('oval-content');
 
-    const title = document.createElement('h2');
-    title.classList.add('oval-title');
-    title.textContent = options.title || 'Сообщение';
+    let title, text;
 
-    const text = document.createElement('p');
-    text.classList.add('oval-text');
-    text.textContent = options.text || '';
+    // Создаем заголовок только если он указан
+    if (options.title !== undefined && options.title !== null && options.title !== '') {
+        title = document.createElement('h2');
+        title.classList.add('oval-title');
+        title.textContent = options.title;
+    }
+
+    // Создаем текст только если он указан
+    if (options.text !== undefined && options.text !== null && options.text !== '') {
+        text = document.createElement('p');
+        text.classList.add('oval-text');
+        text.textContent = options.text;
+    }
 
     const actions = document.createElement('div');
     actions.classList.add('oval-actions');
 
     const overlay = document.createElement('div');
     overlay.classList.add('oval-overlay');
+    
+    // Добавляем пользовательский класс к оверлею
+    if (options.overlayClass) {
+        overlay.classList.add(options.overlayClass);
+    }
+    
     document.body.appendChild(overlay);
 
     const htmlContent = document.createElement('div');
@@ -47,8 +66,15 @@ oval.alert = function (options) {
 
     actions.appendChild(confirmButton);
 
-    content.appendChild(title);
-    content.appendChild(text);
+    // Добавляем заголовок только если он был создан
+    if (title) {
+        content.appendChild(title);
+    }
+    
+    // Добавляем текст только если он был создан
+    if (text) {
+        content.appendChild(text);
+    }
     
     // Обработка html из селектора
     if (options.htmlFromSelector) {
@@ -73,7 +99,8 @@ oval.alert = function (options) {
     if (!options.hideButtons) {
         modal.appendChild(actions);
     }
-    if(options.overlay){
+    
+    if (options.overlay) {
         overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
     }
 
@@ -145,6 +172,5 @@ oval.alert = function (options) {
                 resolve(result);
             });
         }
-
     });
 };
